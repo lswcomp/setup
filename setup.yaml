@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+  become: yes
+  become_method: sudo
+  become_user: root
+
+- tasks:
+    - name: Install tmux
+      apt:
+        name: tmux
+        state: present
+    
+    - name: Get tmux config
+      git:
+        repo: https://github.com/tmux-plugins/tpm
+        dest: ~/.tmux/plugins/tpm
+
+    - name: Create tmux config directory
+      file:
+        path: ~/.config/tmux/tmux.conf
+        state: touch
+      register tmux_config_file
+
+    - name: Edit tmux config
+      lineinfile:
+        line: "set -g @plugin 'tmux-plugins/tpm'\nrun '~/.tmux/plugins/tpm/tpm'\n"
+        state: present
